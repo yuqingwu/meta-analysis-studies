@@ -1,0 +1,30 @@
+---
+title: "meta-analysis study"
+author: "Wu Yuqing,Zhou Yue,Zheng Yuxuan"
+date: "6/18/2023"
+format: html
+execute:
+  echo: fenced
+---
+
+# Summary of the original paper
+Reference:Glass, G. V., & Smith, M. L. (1979). Meta-Analysis of Research on Class Size and Achievement. Educational Evaluation and Policy Analysis, 1(1), 2–16.
+Published by: American Educational Research Association
+Stable URL: <http://www.jstor.org/stable/1164099>
+
+The paper is about a research study on the relationship between **class size** and **student achievement**. The researchers conducted a literature search to gather relevant studies on this topic. They found about 300 documents, but only 80 of them focused on the class-size and achievement relationship. The remaining studies examined non-achievement outcomes and classroom process variables. The researchers acknowledged the support they received from various individuals and institutions. They also mentioned the shortcomings of previous reviews on this topic, such as haphazard literature searches and lack of quantitative methods. The purpose of their research was to address these shortcomings and determine if the existing literature on class size and achievement was confusing or if it could be better understood using more advanced research integration methods.
+
+The paper mentions that the researchers conducted a literature search and read, coded and analyzed 77 different studies. They used regression analysis to examine the relationship between grades and class size.
+
+# Equations
+$$\int_{-\infty}^{\infty}1/(b-a) dx$$
+
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+library(chron)
+library(reticulate)
+```
+
+
