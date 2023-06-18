@@ -1,7 +1,19 @@
 ---
 title: "Reproducible Research"
-format: html
 editor: visual
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-expand: 2
+    toc-title: Contents
+    toc-location: left
+    smooth-scroll: true
+title-block-banner: true
+execute:
+  echo: fenced
+  warning: false
+  #freeze: true
 ---
 
 #Research oveiew
@@ -22,13 +34,230 @@ library(xts)
 library(lmtest)
 library(tidyverse)
 library(urca)
+getwd()
+setwd("/Users/yuqingwu/Desktop/RR\ Study/RR\ Project/Reproduce\ the\ research\ process\ and\ key\ findings\ of\ the\ selected\ papers")
 ```
 
-You can add options to executable code like this
+Import data from the NFLX database,and plot.
 
 ```{r}
 #| echo: false
-2 * 2
+data <- read.csv("NFLX.csv")
+data$Date <- as.Date(data$Date, format = "%Y-%m-%d")
+data %>% glimpse()
+data <- xts(data[, -1],order.by = data$Date,frequency = 12)
+Adj.Close <- data$Adj.Close
+plot(Adj.Close)
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+Exploring Netflix stocks data from 7th April 2015 to 7th April 2020, showed the non-stationary characteristics of time series as shown in Fig.
+```{r}
+adf_test <- ur.df(Adj.Close$Adj.Close, type = "none", lags = 0)
+summary(adf_test)
+```
+Use adf test, non-stationary data
+```{r，error=TRUE}
+par(mfrow = c(2, 1)) 
+par(mar = c(3, 4, 2, 1))
+acf(Adj.Close$Adj.Close,lag.max = 36, ylim = c(-0.1, 0.1),lwd = 5,col = "dark green",na.action = na.pass)  
+pacf(Adj.Close$Adj.Close,lag.max = 36,lwd = 5, col = "dark green",na.action = na.pass)
+par(mfrow = c(1, 1)) 
+```
+first-order difference, adf test again, it is a stationary time series
+```{r}
+dadj <- na.exclude(diff.xts(Adj.Close$Adj.Close))
+adf_test_dadj <- ur.df(dadj, type = "none", lags = 0)
+summary(adf_test_dadj)
+```
+
+plot acf pacf
+
+```{r}
+par(mfrow = c(2, 1)) 
+acf(dadj,lag.max = 36, ylim = c(-0.1, 0.1),lwd = 5,col = "dark green",na.action = na.pass)  
+pacf(dadj,lag.max = 36,lwd = 5, col = "dark green",na.action = na.pass)
+par(mfrow = c(1, 1)) 
+```
+
+```{r}
+library(forecast)
+auto.arima(Adj.Close)
+```
+Determine the arima model pq, first order difference so d is equal to 1, determine arima(1,2,33) and arima(1,1,33)
+Through the auto arima function, it is arima(2, 1, 2)
+```{r}
+cdata.shortx1 <- Adj.Close$Adj.Close["/20171007", ]
+arima212 <- Arima(cdata.shortx1$Adj.Close,order = c(2, 1, 2))
+arima212
+coeftest(arima212)
+summary(arima212)
+plot(resid(arima212))
+tibble(date = index(cdata.shortx1$Adj.Close),resid = arima212 %>% resid() %>% as.numeric()
+) %>%
+  ggplot(aes(date, resid)) +
+  geom_line(col = "royalblue3") +theme_bw()
+```
+xxx
+```{r}
+par(mfrow = c(2, 1)) 
+acf(resid(arima212),lag.max = 36,ylim = c(-0.1, 0.1),lwd = 5, col = "dark green",na.action = na.pass)
+pacf(resid(arima212),lag.max = 36,lwd = 5, col = "dark green",na.action = na.pass)
+par(mfrow = c(1, 1))
+Box.test(resid(arima212), type = "Ljung-Box", lag = 4)
+```
+
+xxx
+```{r}
+arima1133 <- Arima(cdata.shortx1$Adj.Close,order = c(1, 1,33))
+arima1133
+coeftest(arima1133)
+summary(arima1133)
+plot(resid(arima1133))
+tibble(date = index(cdata.shortx1$Adj.Close),resid = arima1133 %>% resid() %>% as.numeric()
+) %>%
+  ggplot(aes(date, resid)) +
+  geom_line(col = "royalblue3") +theme_bw()
+```
+xx
+```{r}
+par(mfrow = c(2, 1)) 
+acf(resid(arima1133),lag.max = 36,ylim = c(-0.1, 0.1),lwd = 5, col = "dark green",na.action = na.pass)
+pacf(resid(arima1133),lag.max = 36,lwd = 5, col = "dark green",na.action = na.pass)
+par(mfrow = c(1, 1))
+Box.test(resid(arima1133), type = "Ljung-Box", lag = 4)
+```
+xxx
+```{r}
+arima1233 <- Arima(cdata.shortx1$Adj.Close,order = c(1, 2,33))
+arima1233
+coeftest(arima1233)
+summary(arima1233)
+plot(resid(arima1233))
+tibble(date = index(cdata.shortx1$Adj.Close),resid = arima1233 %>% resid() %>% as.numeric()
+) %>%
+  ggplot(aes(date, resid)) +
+  geom_line(col = "royalblue3") +theme_bw()
+```
+xxx
+```{r}
+par(mfrow = c(2, 1)) 
+acf(resid(arima1233),lag.max = 36,ylim = c(-0.1, 0.1),lwd = 5, col = "dark green",na.action = na.pass)
+pacf(resid(arima1233),lag.max = 36,lwd = 5, col = "dark green",na.action = na.pass)
+par(mfrow = c(1, 1))
+Box.test(resid(arima1233), type = "Ljung-Box", lag = 4)
+```
+xxx
+```{r}
+forecasts <- forecast(arima212, h = 627) 
+forecasts
+forecasts$mean
+class(forecasts$mean)
+as.numeric(forecasts$mean)
+forecasts$lower
+forecasts$upper
+forecasts_data <- data.frame(f_mean  = as.numeric(forecasts$mean),
+                             f_lower = as.numeric(forecasts$lower[, 2]),
+                             f_upper = as.numeric(forecasts$upper[, 2]))
+
+forecasts_data 
+```
+
+xxx
+```{r}
+cdata.shortx1 <- Adj.Close$Adj.Close["/20171007", ]
+cdata.shortx1
+```
+
+xxxx
+```{r}
+tail(cdata.shortx1)
+cdata.shortx2 <-Adj.Close$Adj.Close["20171007/", ]
+forecasts_xts <- xts(forecasts_data,order.by =index(cdata.shortx2))
+```
+xxx
+```{r}
+cdata3 <- merge(Adj.Close,forecasts_xts)
+```
+
+xxx
+```{r}
+head(cdata3)
+tail(cdata3, n =627)
+plot(cdata3)
+```
+xxx
+```{r}
+forecasts <- forecast(arima1133, h = 627) 
+forecasts
+forecasts$mean
+class(forecasts$mean)
+as.numeric(forecasts$mean)
+forecasts$lower
+forecasts$upper
+forecasts_data <- data.frame(f_mean  = as.numeric(forecasts$mean),
+                             f_lower = as.numeric(forecasts$lower[, 2]),
+                             f_upper = as.numeric(forecasts$upper[, 2]))
+
+forecasts_data 
+```
+xxx
+```{r}
+cdata.shortx1 <- Adj.Close$Adj.Close["/20171007", ]
+cdata.shortx1
+```
+xxx
+```{r}
+tail(cdata.shortx1)
+cdata.shortx2 <-Adj.Close$Adj.Close["20171007/", ]
+forecasts_xts <- xts(forecasts_data,order.by =index(cdata.shortx2))
+```
+xxx
+```{r}
+cdata3 <- merge(Adj.Close,forecasts_xts)
+```
+xx
+```{r}
+
+head(cdata3)
+tail(cdata3, n =627)
+plot(cdata3)
+
+```
+xxx
+```{r}
+forecasts <- forecast(arima1233, h = 627) 
+forecasts
+forecasts$mean
+class(forecasts$mean)
+as.numeric(forecasts$mean)
+forecasts$lower
+forecasts$upper
+forecasts_data <- data.frame(f_mean  = as.numeric(forecasts$mean),
+                             f_lower = as.numeric(forecasts$lower[, 2]),
+                             f_upper = as.numeric(forecasts$upper[, 2]))
+
+forecasts_data 
+```
+xxx
+```{r}
+cdata.shortx1 <- Adj.Close$Adj.Close["/20171007", ]
+cdata.shortx1
+```
+xxx
+```{r}
+tail(cdata.shortx1)
+cdata.shortx2 <-Adj.Close$Adj.Close["20171007/", ]
+forecasts_xts <- xts(forecasts_data,order.by =index(cdata.shortx2))
+```
+xxx
+```{r}
+cdata3 <- merge(Adj.Close,forecasts_xts)
+```
+Use the first 50% of the data, use the above three armia models to make predictions, and use the remaining 50% of the data for comparison and plot
+```{r}
+head(cdata3)
+tail(cdata3, n =627)
+plot(cdata3)
+```
+#Summary of the Reproducible Research
+We replicated the research process based on the original paper and obtained consistent conclusions. The study analyzed historical data of Netflix stocks from April 7, 2015, to April 7, 2020, to evaluate the performance of the auto ARIMA model and two customized ARIMA (p, D, q) models. After conducting multiple tests, the ARIMA (1, 1, 33) model demonstrated accurate results in calculating values, indicating the potential of using the ARIMA model for precise stock forecasting. This accurate prediction can assist investors in making informed decisions regarding their stock investments. 
