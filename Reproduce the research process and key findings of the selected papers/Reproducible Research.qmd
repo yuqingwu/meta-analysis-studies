@@ -1,0 +1,34 @@
+---
+title: "Reproducible Research"
+format: html
+editor: visual
+---
+
+#Research oveiew
+
+Reference:ARIMA Model for Accurate Time Series Stocks Forecasting
+Author(s): Shakir Khan1, Hela Alghulaiakh2,
+Published by: (IJACSA) International Journal of Advanced Computer Science and Applications,Vol. 11, No. 7, 2020
+
+With the increasing of historical data availability and the need to produce forecasting which includes making decisions regarding investments, in addition to the needs of developing plans and strategies for the future endeavors as well as the difficulty to predict the stock market due to its complicated features, This study applied and compared auto ARIMA (Auto Regressive Integrated Moving Average model). Two customize ARIMA(p,D,q) to get an accurate stock forecasting model by using Netflix stock historical data for five years. Between the three models, ARIMA (1,1,33) showed accurate results in calculating the MAPE and holdout testing, which shows the potential of using the ARIMA model for accurate stock forecasting.
+Below we will reproduce the study and analyze it.
+
+# Running Code and Analysis
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+library(xts)
+library(lmtest)
+library(tidyverse)
+library(urca)
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
