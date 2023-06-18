@@ -13,7 +13,10 @@ title-block-banner: true
 execute:
   echo: fenced
   warning: false
-  #freeze: true
+output:
+  html_document:
+    df_print:
+      max.print: 10
 ---
 
 #Research oveiew
@@ -51,11 +54,13 @@ plot(Adj.Close)
 ```
 
 Exploring Netflix stocks data from 7th April 2015 to 7th April 2020, showed the non-stationary characteristics of time series as shown in Fig.
+
 ```{r}
 adf_test <- ur.df(Adj.Close$Adj.Close, type = "none", lags = 0)
 summary(adf_test)
 ```
 Use adf test, non-stationary data
+
 ```{r，error=TRUE}
 par(mfrow = c(2, 1)) 
 par(mar = c(3, 4, 2, 1))
@@ -63,14 +68,14 @@ acf(Adj.Close$Adj.Close,lag.max = 36, ylim = c(-0.1, 0.1),lwd = 5,col = "dark gr
 pacf(Adj.Close$Adj.Close,lag.max = 36,lwd = 5, col = "dark green",na.action = na.pass)
 par(mfrow = c(1, 1)) 
 ```
-first-order difference, adf test again, it is a stationary time series
+
 ```{r}
 dadj <- na.exclude(diff.xts(Adj.Close$Adj.Close))
 adf_test_dadj <- ur.df(dadj, type = "none", lags = 0)
 summary(adf_test_dadj)
 ```
 
-plot acf pacf
+first-order difference, adf test again, it is a stationary time series
 
 ```{r}
 par(mfrow = c(2, 1)) 
@@ -79,12 +84,12 @@ pacf(dadj,lag.max = 36,lwd = 5, col = "dark green",na.action = na.pass)
 par(mfrow = c(1, 1)) 
 ```
 
+
 ```{r}
 library(forecast)
 auto.arima(Adj.Close)
 ```
-Determine the arima model pq, first order difference so d is equal to 1, determine arima(1,2,33) and arima(1,1,33)
-Through the auto arima function, it is arima(2, 1, 2)
+
 ```{r}
 cdata.shortx1 <- Adj.Close$Adj.Close["/20171007", ]
 arima212 <- Arima(cdata.shortx1$Adj.Close,order = c(2, 1, 2))
@@ -97,7 +102,7 @@ tibble(date = index(cdata.shortx1$Adj.Close),resid = arima212 %>% resid() %>% as
   ggplot(aes(date, resid)) +
   geom_line(col = "royalblue3") +theme_bw()
 ```
-xxx
+
 ```{r}
 par(mfrow = c(2, 1)) 
 acf(resid(arima212),lag.max = 36,ylim = c(-0.1, 0.1),lwd = 5, col = "dark green",na.action = na.pass)
@@ -106,7 +111,6 @@ par(mfrow = c(1, 1))
 Box.test(resid(arima212), type = "Ljung-Box", lag = 4)
 ```
 
-xxx
 ```{r}
 arima1133 <- Arima(cdata.shortx1$Adj.Close,order = c(1, 1,33))
 arima1133
@@ -118,7 +122,7 @@ tibble(date = index(cdata.shortx1$Adj.Close),resid = arima1133 %>% resid() %>% a
   ggplot(aes(date, resid)) +
   geom_line(col = "royalblue3") +theme_bw()
 ```
-xx
+
 ```{r}
 par(mfrow = c(2, 1)) 
 acf(resid(arima1133),lag.max = 36,ylim = c(-0.1, 0.1),lwd = 5, col = "dark green",na.action = na.pass)
@@ -126,7 +130,7 @@ pacf(resid(arima1133),lag.max = 36,lwd = 5, col = "dark green",na.action = na.pa
 par(mfrow = c(1, 1))
 Box.test(resid(arima1133), type = "Ljung-Box", lag = 4)
 ```
-xxx
+plot acf pacf
 ```{r}
 arima1233 <- Arima(cdata.shortx1$Adj.Close,order = c(1, 2,33))
 arima1233
@@ -138,7 +142,7 @@ tibble(date = index(cdata.shortx1$Adj.Close),resid = arima1233 %>% resid() %>% a
   ggplot(aes(date, resid)) +
   geom_line(col = "royalblue3") +theme_bw()
 ```
-xxx
+
 ```{r}
 par(mfrow = c(2, 1)) 
 acf(resid(arima1233),lag.max = 36,ylim = c(-0.1, 0.1),lwd = 5, col = "dark green",na.action = na.pass)
@@ -168,24 +172,24 @@ cdata.shortx1 <- Adj.Close$Adj.Close["/20171007", ]
 cdata.shortx1
 ```
 
-xxxx
+
 ```{r}
 tail(cdata.shortx1)
 cdata.shortx2 <-Adj.Close$Adj.Close["20171007/", ]
 forecasts_xts <- xts(forecasts_data,order.by =index(cdata.shortx2))
 ```
-xxx
+
 ```{r}
 cdata3 <- merge(Adj.Close,forecasts_xts)
 ```
 
-xxx
+
 ```{r}
 head(cdata3)
 tail(cdata3, n =627)
 plot(cdata3)
 ```
-xxx
+
 ```{r}
 forecasts <- forecast(arima1133, h = 627) 
 forecasts
@@ -200,22 +204,22 @@ forecasts_data <- data.frame(f_mean  = as.numeric(forecasts$mean),
 
 forecasts_data 
 ```
-xxx
+
 ```{r}
 cdata.shortx1 <- Adj.Close$Adj.Close["/20171007", ]
 cdata.shortx1
 ```
-xxx
+
 ```{r}
 tail(cdata.shortx1)
 cdata.shortx2 <-Adj.Close$Adj.Close["20171007/", ]
 forecasts_xts <- xts(forecasts_data,order.by =index(cdata.shortx2))
 ```
-xxx
+
 ```{r}
 cdata3 <- merge(Adj.Close,forecasts_xts)
 ```
-xx
+
 ```{r}
 
 head(cdata3)
@@ -223,7 +227,7 @@ tail(cdata3, n =627)
 plot(cdata3)
 
 ```
-xxx
+
 ```{r}
 forecasts <- forecast(arima1233, h = 627) 
 forecasts
@@ -238,18 +242,18 @@ forecasts_data <- data.frame(f_mean  = as.numeric(forecasts$mean),
 
 forecasts_data 
 ```
-xxx
+
 ```{r}
 cdata.shortx1 <- Adj.Close$Adj.Close["/20171007", ]
 cdata.shortx1
 ```
-xxx
+
 ```{r}
 tail(cdata.shortx1)
 cdata.shortx2 <-Adj.Close$Adj.Close["20171007/", ]
 forecasts_xts <- xts(forecasts_data,order.by =index(cdata.shortx2))
 ```
-xxx
+
 ```{r}
 cdata3 <- merge(Adj.Close,forecasts_xts)
 ```

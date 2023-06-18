@@ -167,7 +167,7 @@ Critical values for test statistics:
 tau1 -2.58 -1.95 -1.62</code></pre>
 </div>
 </div>
-<p><code>{r，error=TRUE} par(mfrow = c(2, 1))  par(mar = c(3, 4, 2, 1)) acf(Adj.Close$Adj.Close,lag.max = 36, ylim = c(-0.1, 0.1),lwd = 5,col = "dark green",na.action = na.pass)   pacf(Adj.Close$Adj.Close,lag.max = 36,lwd = 5, col = "dark green",na.action = na.pass) par(mfrow = c(1, 1))</code> xxx</p>
+<p>Use adf test, non-stationary data <code>{r，error=TRUE} par(mfrow = c(2, 1))  par(mar = c(3, 4, 2, 1)) acf(Adj.Close$Adj.Close,lag.max = 36, ylim = c(-0.1, 0.1),lwd = 5,col = "dark green",na.action = na.pass)   pacf(Adj.Close$Adj.Close,lag.max = 36,lwd = 5, col = "dark green",na.action = na.pass) par(mfrow = c(1, 1))</code> first-order difference, adf test again, it is a stationary time series</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>dadj <span class="ot">&lt;-</span> <span class="fu">na.exclude</span>(<span class="fu">diff.xts</span>(Adj.Close<span class="sc">$</span>Adj.Close))</span>
@@ -208,7 +208,7 @@ Critical values for test statistics:
 tau1 -2.58 -1.95 -1.62</code></pre>
 </div>
 </div>
-<p>xx</p>
+<p>plot acf pacf</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>)) </span>
@@ -220,7 +220,6 @@ tau1 -2.58 -1.95 -1.62</code></pre>
 <p><img src="Reproducible-Research_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>xxx</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
@@ -239,7 +238,7 @@ sigma^2 = 39.13:  log likelihood = -4092.27
 AIC=8196.53   AICc=8196.6   BIC=8227.36</code></pre>
 </div>
 </div>
-<p>xxx</p>
+<p>Determine the arima model pq, first order difference so d is equal to 1, determine arima(1,2,33) and arima(1,1,33) Through the auto arima function, it is arima(2, 1, 2)</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>cdata.shortx1 <span class="ot">&lt;-</span> Adj.Close<span class="sc">$</span>Adj.Close[<span class="st">"/20171007"</span>, ]</span>
@@ -8935,7 +8934,7 @@ Frequency = 1
 <span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>cdata3 <span class="ot">&lt;-</span> <span class="fu">merge</span>(Adj.Close,forecasts_xts)</span>
 <span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>xxx</p>
+<p>Use the first 50% of the data, use the above three armia models to make predictions, and use the remaining 50% of the data for comparison and plot</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cdata3)</span>
@@ -8977,6 +8976,7 @@ Frequency = 1
 <p><img src="Reproducible-Research_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>#Summary of the Reproducible Research We replicated the research process based on the original paper and obtained consistent conclusions. The study analyzed historical data of Netflix stocks from April 7, 2015, to April 7, 2020, to evaluate the performance of the auto ARIMA model and two customized ARIMA (p, D, q) models. After conducting multiple tests, the ARIMA (1, 1, 33) model demonstrated accurate results in calculating values, indicating the potential of using the ARIMA model for precise stock forecasting. This accurate prediction can assist investors in making informed decisions regarding their stock investments.</p>
 </section>
 
 </main>
